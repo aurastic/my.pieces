@@ -2,12 +2,14 @@ package com.example.mypieces;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -18,8 +20,10 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 public class NewPieceInputPage extends AppCompatActivity {
+
 
     private ArrayList<PieceData> pieceList;
 
@@ -38,7 +42,7 @@ public class NewPieceInputPage extends AppCompatActivity {
     private Spinner spinnerKeyTypeInput;
     private TextInputLayout whyInput;
     private TextInputLayout collectionInput;
-
+    private ProgressBar tempoProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +65,9 @@ public class NewPieceInputPage extends AppCompatActivity {
         whyInput = findViewById(R.id.input_why);
         collectionInput = findViewById(R.id.input_collection);
 
+        tempoProgressBar = findViewById(R.id.progressBar);
+
+
         clearInputs();
         loadData();
         makeSpinners();
@@ -72,6 +79,7 @@ public class NewPieceInputPage extends AppCompatActivity {
         Button submitButton = findViewById(R.id.submit_button);
         Button resetButton = findViewById(R.id.button_reset);
         Button submitPlusButton = findViewById(R.id.submit_plus_button);
+        Button enterButton = findViewById(R.id.submit_tempo_button);
 
         submitButton.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -97,6 +105,14 @@ public class NewPieceInputPage extends AppCompatActivity {
                 clearInputs();
             }
         });
+
+        enterButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v)
+            {
+               updateProgressBar();
+            }
+        } );
     }
 
     public void logNewPiece(boolean isFirstOfMany)
@@ -125,7 +141,7 @@ public class NewPieceInputPage extends AppCompatActivity {
         saveData();
 
         ArrayList<Integer> newIndices = new ArrayList();
-        newIndices.add(pieceList.lastIndexOf(entry));
+        newIndices.add(pieceList.size()- 1);
 
         if(!isFirstOfMany)
         {
@@ -134,6 +150,7 @@ public class NewPieceInputPage extends AppCompatActivity {
             bundle.putIntegerArrayList("indices", newIndices);
             bundle.putBoolean("was piece added", true);
             intent.putExtras(bundle);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         }
 
@@ -226,6 +243,39 @@ public class NewPieceInputPage extends AppCompatActivity {
         super.onRestart();
         loadData();
         clearInputs();
+
+    }
+
+    private void updateProgressBar()
+    {
+        String myTempo = tempoTextInput.getEditText().getText().toString();
+        String ideal = idealBPM.getEditText().getText().toString();
+
+        try
+        {
+            int max = Integer.parseInt(ideal);
+            tempoProgressBar.setMax(max);
+
+
+        }
+        catch (NumberFormatException ex)
+        {
+            ex.printStackTrace();
+        }
+
+        try
+        {
+            int current = Integer.parseInt(myTempo);
+            tempoProgressBar.setProgress(current);
+
+
+        }
+        catch (NumberFormatException ex)
+        {
+            ex.printStackTrace();
+        }
+
+
     }
 
     private void clearInputs()

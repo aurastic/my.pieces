@@ -5,6 +5,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -19,11 +20,13 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+
 public class RepertoireList extends AppCompatActivity {
 
     private RepertoireListAdapter recyclerAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView recyclerView;
+
 
 
 
@@ -38,7 +41,6 @@ public class RepertoireList extends AppCompatActivity {
         startRecycler(pieceList);
 
     }
-
 
     private void startRecycler(ArrayList<PieceData> arrayList)
     {
@@ -74,6 +76,7 @@ public class RepertoireList extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), NewPieceInputPage.class);
+
                 startActivity(intent);
             }
         });
@@ -83,6 +86,7 @@ public class RepertoireList extends AppCompatActivity {
     {
         pieceList.clear();
         saveData();
+
     }
 
 
@@ -103,6 +107,7 @@ public class RepertoireList extends AppCompatActivity {
         editor.apply();
 
     }
+
     private void loadData()
     {
         SharedPreferences sharedPrefs = getSharedPreferences("shared preferences", MODE_PRIVATE);
@@ -117,12 +122,14 @@ public class RepertoireList extends AppCompatActivity {
         }
 
     }
+
     @Override
-    protected void onRestart()
+    protected void onResume()
     {
-        super.onRestart();
+        super.onResume();
         loadData();
         Intent intent = getIntent();
+        setIntent(intent);
 
         boolean added = intent.getBooleanExtra("piece added?", false);
         boolean deleted = intent.getBooleanExtra("piece deleted?", false);
@@ -143,13 +150,12 @@ public class RepertoireList extends AppCompatActivity {
             }
         }
 
+
+
     }
 
-    @Override
-    public void onBackPressed()
-    {
-        Intent intent = new Intent(this, PiecesMain.class);
-        startActivity(intent);
-    }
+
+
+
 
 }
